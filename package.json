@@ -1,0 +1,24 @@
+{
+  "name": "anthem",
+  "version": "1.0.0",
+  "description": "Minimal REST framework",
+  "main": "dist/app.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && 6to5 src -d dist -b generators,letScoping,constants",
+    "watch": "npm run build -- -w",
+    "test": "npm run build && mocha --harmony dist/**/__tests__/*-test.js"
+  },
+  "author": "Andrew Clark",
+  "license": "ISC",
+  "dependencies": {
+    "co": "~4.0.1",
+    "object-assign": "~2.0.0"
+  },
+  "devDependencies": {
+    "6to5": "~1.15.0",
+    "chai": "~1.10.0",
+    "co-mocha": "~1.1.0",
+    "mocha": "~2.0.1"
+  }
+}
