@@ -7,11 +7,12 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && 6to5 src -d dist -b generators,letScoping,constants",
     "watch": "npm run build -- -w",
-    "test": "npm run build && mocha --harmony dist/**/__tests__/*-test.js"
+    "test": "npm run build && mocha --harmony dist/**/__tests__/*-test.js --require dist/test-init.js"
   },
   "author": "Andrew Clark",
   "license": "ISC",
   "dependencies": {
+    "101": "~0.8.0",
     "co": "~4.0.1",
     "object-assign": "~2.0.0"
   },
