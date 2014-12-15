@@ -1,6 +1,7 @@
 'use strict';
 
 import { expect } from 'chai';
+import { stub } from 'sinon';
 
 describe('Collection', () => {
 
@@ -12,12 +13,12 @@ describe('Collection', () => {
     resources = new Collection();
   });
 
-  it('returns null for REST operation methods', () => {
-    expect(resources.getOne()).to.be.null;
-    expect(resources.get()).to.be.null;
-    expect(resources.post()).to.be.null;
-    expect(resources.put()).to.be.null;
-    expect(resources.delete()).to.be.null;
+  it('REST operation methods are undefined on base class', () => {
+    expect(resources.getOne).to.be.undefined;
+    expect(resources.get).to.be.undefined;
+    expect(resources.post).to.be.undefined;
+    expect(resources.put).to.be.undefined;
+    expect(resources.delete).to.be.undefined;
   });
 
   describe('#formatOne', () => {
@@ -28,17 +29,16 @@ describe('Collection', () => {
   });
 
   describe('#format', () => {
-    class Foo extends Collection {
-      formatOne(resource) {
-        return { bar: 'baz' };
-      }
-    }
+    it('applys #formatOne to each object in array', () => {
+      class Foos extends Collection {}
 
-    let foos = new Foo();
-    let collection = [{ foo: 'bar' }];
+      let formatOne = stub().returns({});
+      Foos.prototype.formatOne = formatOne;
 
-    it('applys .formatOne to each object in array', () => {
-      expect(foos.format(collection)).to.deep.equal([{ bar: 'baz' }]);
+      let foos = new Foos();
+      foos.format([{}, {}, {}]);
+
+      expect(formatOne.callCount).to.equal(3);
     });
   });
 });

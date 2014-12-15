@@ -18,13 +18,13 @@ To create a new collection, extend from the base Collection class.
 ```js
 import { Collection } from Anthem;
 
-class Post extends Collection {
+class Posts extends Collection {
 
   ...
 
 }
 
-let posts = new Post();
+let posts = new Posts();
 export default posts;
 ```
 

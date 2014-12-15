@@ -1,17 +1,29 @@
 'use strict';
 
-function performCollectionRESTOperation(collection, method, ...args) {
-  let response = collection[method](...args);
+import * as isObject from '101/is-object';
 
-  if (response === null) {
-    return null;
+function performCollectionRESTOperation(collection, method, ...args) {
+  let response;
+
+  if (typeof collection[method] !== 'function') {
+    return Promise.resolve(null);
   }
-  else if (response instanceof Promise) {
-    return response;
+
+  response = collection[method](...args);
+
+  if (!(response instanceof Promise)) {
+    throw new Error(`${method} method of ${collection.constructor.name} collection must return a Promise.`);
   }
-  else {
-    throw new Error(`${method} method of ${collection.constructor.name} collection must return a Promise (or null to indicate that the operation is not supported).`);
-  }
+
+  return response;
+
+  // return response.then(function(result) {
+  //   if (!isObject(result)) {
+  //     return Promise.reject(new Error(`Non-object returned from ${method}()`));
+  //   }
+  //
+  //   return result;
+  // });
 }
 
 export default performCollectionRESTOperation;

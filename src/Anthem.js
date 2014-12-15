@@ -2,7 +2,9 @@
 
 import Collection from './Collection';
 import performCollectionRESTOperation from './performCollectionRESTOperation';
+import * as co from 'co';
 import * as isObject from '101/is-object';
+import * as isString from '101/is-string';
 
 class Anthem {
   constructor() {
@@ -10,13 +12,18 @@ class Anthem {
   }
 
   /**
-   * Registers a collection
-   * @param {string} name - name of collection
+   * Registers a collection using its name property.
    * @param {Collection} collection
    */
-  addCollection(name, collection) {
+  addCollection(collection) {
     if (!(collection instanceof Collection)) {
       throw new Error('Collection must inherit from base Collection class.');
+    }
+
+    let name = collection.name;
+
+    if (!isString(name)) {
+      throw new Error('Collection must have name property of type String.');
     }
 
     this.collections.set(name, collection);
@@ -31,41 +38,74 @@ class Anthem {
     return this.collections.get(name);
   }
 
+  getCollectionOrThrow(name) {
+    let collection = this.collection(name);
+
+    if (!collection) throw new Error(
+      `No registered collection with name ${name} exists.`
+    );
+
+    return collection;
+  }
+
   getOne(collectionName, ...args) {
-    let collection = this.collection(collectionName);
-    let response = performCollectionRESTOperation(collection, 'getOne', ...args);
+    let collection = this.getCollectionOrThrow(collectionName);
 
-    if (!response) return null;
+    return co(function *() {
+      let response = yield performCollectionRESTOperation(collection, 'getOne', ...args);
 
-    return new Promise((resolve, reject) => {
-      response.then(result => {
-        if (!isObject(result)) {
-          reject(new Error('Non-object returned from getOne()'));
+      if (response === null) {
+        return null;
+      }
+      else {
+        if (!isObject(response)) {
+          throw new Error(`Non-object returned from getOne method of ${collection.constructor.name}`);
         }
-        else {
-          resolve(result);
-        }
-      });
+      }
+
+      response = collection.formatOne(response);
+
+      if (!isObject(response)) {
+        throw new Error('Non-object returned from formatOne()');
+      }
+
+      return response;
     });
   }
 
-  get(collectionName, ...args) {
-    let collection = this.collection(collectionName);
-    let response = performCollectionRESTOperation(collection, 'getOne', ...args);
+  // get(collectionName, ...args) {
+  //   let collection = this.getCollectionOrThrow(collectionName);
+  //
+  //   return co(function *() {
+  //     let response = yield performCollectionRESTOperation(collection, 'getOne', ...args);
+  //
+  //     if (response === null) {
+  //       return null;
+  //     }
+  //
+  //     response = collection.formatOne(response);
+  //
+  //     if (!isObject(response)) {
+  //       throw new Error('Non-object returned from format()');
+  //     }
+  //
+  //     return response;
+  //   });
+  // }
 
-    if (!response) return null;
-
-    return new Promise((resolve, reject) => {
-      response.then(result => {
-        if (!Array.isArray(result)) {
-          reject(new Error('Non-array returned from get()'));
-        }
-        else {
-          resolve(result);
-        }
-      });
-    });
-  }
+  // get(collectionName, ...args) {
+  //   let collection = this.getCollectionOrThrow(collectionName);
+  //
+  //   return co(function *() {
+  //     let response = yield performCollectionRESTOperation(collection, 'get', ...args);
+  //
+  //     if (response === null) {
+  //       return null;
+  //     }
+  //
+  //     return response;
+  //   })
+  // }
 }
 
 export default Anthem;

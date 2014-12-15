@@ -5,32 +5,42 @@ import { expect } from 'chai';
 describe('performCollectionRESTOperation', () => {
   import performCollectionRESTOperation from '../performCollectionRESTOperation.js';
 
-  it('returns result of operation', function *() {
+  it('returns promise for result of operation', function *() {
     let c = {
       foo(a, b) {
-        return Promise.resolve(a + b);
+        return Promise.resolve({ result: a + b });
       },
     };
 
-    expect(yield performCollectionRESTOperation(c, 'foo', 'bar', 'baz')).to.equal('barbaz');
+    expect(yield performCollectionRESTOperation(c, 'foo', 'bar', 'baz')).to.deep.equal({ result: 'barbaz' });
   });
 
-  it('throws if result is neither a Promise nor null', () => {
+  it('throws if result is not a promise', () => {
     let c = {
       foo() {
         return 'foobar';
       },
-
-      bar() {
-        return true;
-      }
     };
 
     expect(performCollectionRESTOperation.bind(null, c, 'foo')).to.throw(
-      'foo method of Object collection must return a Promise (or null to indicate that the operation is not supported).'
+      'foo method of Object collection must return a Promise.'
     );
-    expect(performCollectionRESTOperation.bind(null, c, 'bar')).to.throw(
-      'bar method of Object collection must return a Promise (or null to indicate that the operation is not supported).'
-    );
+  });
+
+  it('returns promise for null if operation is not supported', function *() {
+    expect(yield performCollectionRESTOperation({}, 'get')).to.be.null;
+  });
+
+  it('throws if promise from operation resolves to non-object', function *() {
+    let c = {
+      foo() {
+        return 'bar';
+      }
+    }
+
+    let error;
+    try { yield performCollectionRESTOperation(c, 'foo'); } catch (e) { error = e; }
+
+    expect(error.message).to.equal('foo method of Object collection must return a Promise.');
   });
 });
