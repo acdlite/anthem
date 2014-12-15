@@ -5,27 +5,27 @@ class Collection {
   /**
    * REST operation methods
    *
-   * These return false by default to indicate to the consumer that the
+   * These return null by default to indicate to the consumer that the
    * collection does not support the operation.
    */
   getOne() {
-    return false;
+    return null;
   }
 
   get() {
-    return false;
+    return null;
   }
 
   post() {
-    return false;
+    return null;
   }
 
   put() {
-    return false;
+    return null;
   }
 
   delete() {
-    return false;
+    return null;
   }
 
   /**

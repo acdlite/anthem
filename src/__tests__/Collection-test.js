@@ -12,12 +12,12 @@ describe('Collection', () => {
     resources = new Collection();
   });
 
-  it('returns false for REST operation methods', () => {
-    expect(resources.getOne()).to.be.false;
-    expect(resources.get()).to.be.false;
-    expect(resources.post()).to.be.false;
-    expect(resources.put()).to.be.false;
-    expect(resources.delete()).to.be.false;
+  it('returns null for REST operation methods', () => {
+    expect(resources.getOne()).to.be.null;
+    expect(resources.get()).to.be.null;
+    expect(resources.post()).to.be.null;
+    expect(resources.put()).to.be.null;
+    expect(resources.delete()).to.be.null;
   });
 
   describe('#formatOne', () => {
