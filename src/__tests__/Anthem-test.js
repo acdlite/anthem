@@ -2,7 +2,6 @@
 
 import { expect } from 'chai';
 import { default as Anthem, Collection } from '../Anthem.js';
-import { stub } from 'sinon';
 
 describe('Anthem', () => {
 

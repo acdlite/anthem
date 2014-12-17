@@ -36,7 +36,7 @@ describe('performCollectionRESTOperation', () => {
       foo() {
         return 'bar';
       }
-    }
+    };
 
     let error;
     try { yield performCollectionRESTOperation(c, 'foo'); } catch (e) { error = e; }
