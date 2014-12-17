@@ -6,6 +6,8 @@ import * as co from 'co';
 import * as isObject from '101/is-object';
 import * as isString from '101/is-string';
 
+let { isArray } = Array;
+
 class Anthem {
   constructor() {
     this.collections = new Map();
@@ -48,64 +50,62 @@ class Anthem {
     return collection;
   }
 
-  getOne(collectionName, ...args) {
+  getOne(collectionName, id, ...args) {
     let collection = this.getCollectionOrThrow(collectionName);
 
     return co(function *() {
-      let response = yield performCollectionRESTOperation(collection, 'getOne', ...args);
+      let response = yield performCollectionRESTOperation(collection, 'getOne', id, ...args);
 
       if (response === null) {
         return null;
       }
-      else {
-        if (!isObject(response)) {
-          throw new Error(`Non-object returned from getOne method of ${collection.constructor.name}`);
-        }
+      else if (!isObject(response)) {
+        throw new Error(`Non-object returned from getOne method of ${collection.constructor.name}`);
       }
 
-      response = collection.formatOne(response);
-
-      if (!isObject(response)) {
-        throw new Error('Non-object returned from formatOne()');
-      }
-
-      return response;
+      return formatCollection(collectionName, [response]);
     });
   }
 
-  // get(collectionName, ...args) {
-  //   let collection = this.getCollectionOrThrow(collectionName);
-  //
-  //   return co(function *() {
-  //     let response = yield performCollectionRESTOperation(collection, 'getOne', ...args);
-  //
-  //     if (response === null) {
-  //       return null;
-  //     }
-  //
-  //     response = collection.formatOne(response);
-  //
-  //     if (!isObject(response)) {
-  //       throw new Error('Non-object returned from format()');
-  //     }
-  //
-  //     return response;
-  //   });
-  // }
+  get(collectionName, ...args) {
+    let collection = this.getCollectionOrThrow(collectionName);
 
-  // get(collectionName, ...args) {
-  //   let collection = this.getCollectionOrThrow(collectionName);
-  //
-  //   return co(function *() {
-  //     let response = yield performCollectionRESTOperation(collection, 'get', ...args);
-  //
-  //     if (response === null) {
-  //       return null;
-  //     }
-  //
-  //     return response;
-  //   })
-  // }
+    return co(function *() {
+      let response = yield performCollectionRESTOperation(collection, 'get', ...args);
+
+      if (response === null) {
+        return null;
+      }
+      else if (!isArray(response)) {
+        throw new Error(`Non-array returned from get method of ${collection.constructor.name}`);
+      }
+
+      return formatCollection(collectionName, response);
+    });
+  }
+
+  post(collectionName, resource, ...args) {
+    let collection = this.getCollectionOrThrow(collectionName);
+
+    return co(function *() {
+      let response = yield performCollectionRESTOperation(collection, 'post', resource, ...args);
+
+      if (response === null) {
+        return null;
+      }
+      else if (!isObject(response)) {
+        throw new Error(`Non-object returned from post method of ${collection.constructor.name}`);
+      }
+
+      return formatCollection(collectionName, [response]);
+    });
+  }
+}
+
+function formatCollection(collectionName, resources) {
+  return {
+    [collectionName]: resources,
+  };
 }
 
 export default Anthem;

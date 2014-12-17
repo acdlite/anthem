@@ -62,57 +62,109 @@ describe('Anthem', () => {
   describe('#getOne', () => {
     testRESTOperation('getOne');
 
-    it('calls collection\'s formatOne method', function *() {
+    it('throws if response from collection is not an object', function *() {
       class Bazzes extends Collection {
-        get name() {
-          return 'bazzes';
-        }
+        get name() { return 'bazzes'; }
 
         getOne() {
-          return Promise.resolve({});
-        }
-      }
-
-      let formatOne = stub().returns({});
-      Bazzes.prototype.formatOne = formatOne;
-
-      anthem.addCollection(new Bazzes());
-      yield anthem.getOne('bazzes');
-
-      expect(formatOne.calledOnce).to.be.true;
-    });
-
-    it('throws if collection\'s formatOne method does not return an object', function *() {
-      class Bazzes extends Collection {
-        get name() {
-          return 'bazzes';
-        }
-
-        getOne() {
-          return Promise.resolve({});
-        }
-
-        formatOne() {
-          return [];
+          return Promise.resolve([]);
         }
       }
 
       anthem.addCollection(new Bazzes());
 
       let error;
-      try { yield anthem.getOne('bazzes') } catch (e) { error = e; }
+      try { yield anthem.getOne('bazzes'); } catch (e) { error = e; }
 
-      expect(error.message).to.equal('Non-object returned from formatOne()');
-    })
+      expect(error.message).to.equal(`Non-object returned from getOne method of Bazzes`);
+    });
+
+    it('formats response as object with single key', function *() {
+      class Bazzes extends Collection {
+        get name() {
+          return 'bazzes';
+        }
+
+        getOne() {
+          return Promise.resolve({
+            foo: 'bar',
+          });
+        }
+      }
+
+      anthem.addCollection(new Bazzes());
+
+      expect(yield anthem.getOne('bazzes')).to.deep.equal({
+        bazzes: [
+          {
+            foo: 'bar',
+          }
+        ],
+      });
+    });
   });
 
-  // describe('#get', () => {
-  //   testRESTOperation('get');
-  // });
+  describe('#get', () => {
+    testRESTOperation('get');
 
-  // describe('#post', () => {
-  //   testRESTOperation('post');
-  // });
+    it('throws if response from collection is not an array', function *() {
+      class Bazzes extends Collection {
+        get name() { return 'bazzes'; }
+
+        get() {
+          return Promise.resolve({});
+        }
+      }
+
+      anthem.addCollection(new Bazzes());
+
+      let error;
+      try { yield anthem.get('bazzes'); } catch (e) { error = e; }
+
+      expect(error.message).to.equal(
+        'Non-array returned from get method of Bazzes'
+      );
+    });
+
+    it('formats response as object with single key', function *() {
+      class Bazzes extends Collection {
+        get name() {
+          return 'bazzes';
+        }
+
+        get() {
+          return Promise.resolve([1, 2, 3]);
+        }
+      }
+
+      anthem.addCollection(new Bazzes());
+
+      expect(yield anthem.get('bazzes')).to.deep.equal({
+        bazzes: [1, 2, 3],
+      });
+    });
+  });
+
+  describe('#post', () => {
+    testRESTOperation('post');
+
+    it('throws if response from collection is not an object', function *() {
+      class Bazzes extends Collection {
+        get name() { return 'bazzes'; }
+
+        post() {
+          return Promise.resolve([]);
+        }
+      }
+
+      anthem.addCollection(new Bazzes());
+
+      let error;
+      try { yield anthem.post('bazzes'); } catch (e) { error = e; }
+
+      expect(error.message).to.equal(`Non-object returned from post method of Bazzes`);
+    });
+  });
   //
   // describe('#put', () => {
   //   testRESTOperation('put');
@@ -122,27 +174,11 @@ describe('Anthem', () => {
   //   testRESTOperation('delete');
   // });
 
-
   function testRESTOperation(operation) {
-    it('throws if there is no matching collection', () =>{
+    it('throws if there is no matching collection', () => {
       expect(anthem[operation].bind(anthem, 'foos')).to.throw(
         'No registered collection with name foos exists.'
       );
-    });
-
-    it('throws if response is not an object', function *() {
-      class Bazzes extends Collection {
-        get name() { return 'bazzes'; }
-      }
-
-      Bazzes.prototype[operation] = () => Promise.resolve([]);
-
-      anthem.addCollection(new Bazzes());
-
-      let error;
-      try { yield anthem[operation]('bazzes'); } catch (e) { error = e; }
-
-      expect(error.message).to.equal(`Non-object returned from ${operation} method of Bazzes`);
     });
 
     it('returns Promise for null if operation is not supported', function *() {
