@@ -1,7 +1,8 @@
 'use strict';
 
 if (typeof Promise === 'undefined') {
-  global.Promise = require('es6-promise');
+  import { Promise } from 'es6-promise'
+  global.Promise = Promise;
 }
 
 import * as chai from 'chai';
