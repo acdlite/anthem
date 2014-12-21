@@ -13,11 +13,11 @@ describe('Collection', () => {
   });
 
   it('REST operation methods are undefined on base class', () => {
-    expect(resources.getOne).to.be.undefined;
+    expect(resources.getById).to.be.undefined;
     expect(resources.get).to.be.undefined;
     expect(resources.post).to.be.undefined;
     expect(resources.put).to.be.undefined;
     expect(resources.delete).to.be.undefined;
   });
-  
+
 });

@@ -50,17 +50,17 @@ class Anthem {
     return collection;
   }
 
-  getOne(collectionName, id, ...args) {
+  getById(collectionName, id, ...args) {
     let collection = this.getCollectionOrThrow(collectionName);
 
     return co(function *() {
-      let response = yield performCollectionRESTOperation(collection, 'getOne', id, ...args);
+      let response = yield performCollectionRESTOperation(collection, 'getById', id, ...args);
 
       if (response === null) {
         return null;
       }
       else if (!isObject(response)) {
-        throw new Error(`Non-object returned from getOne method of ${collection.constructor.name}`);
+        throw new Error(`Non-object returned from getById method of ${collection.constructor.name}`);
       }
 
       return formatCollection(collectionName, [response]);

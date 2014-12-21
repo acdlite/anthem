@@ -1,9 +1,10 @@
 ## \*\*WORK IN PROGRESS\*\*
 
 [![build status](https://img.shields.io/travis/acdlite/anthem.svg?style=flat-square)](https://travis-ci.org/acdlite/anthem)
+[![code climate](https://img.shields.io/codeclimate/github/acdlite/anthem.svg?style=flat-square)](https://codeclimate.com/github/acdlite/anthem)
 
 
-anthem
+Anthem
 ======
 
 
@@ -63,7 +64,7 @@ To use a collection, register it with `api.addCollection()`.
 
 A collection class may implement one or more of the following methods, which correspond to REST operations.
 
-### `getOne(id, [params])`
+### `getById(id, [params])`
 
 Corresponds to `GET /resource/:id`
 

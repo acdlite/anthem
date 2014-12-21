@@ -58,14 +58,14 @@ describe('Anthem', () => {
     });
   });
 
-  describe('#getOne', () => {
-    testRESTOperation('getOne');
+  describe('#getById', () => {
+    testRESTOperation('getById');
 
     it('throws if response from collection is not an object', function *() {
       class Bazzes extends Collection {
         get name() { return 'bazzes'; }
 
-        getOne() {
+        getById() {
           return Promise.resolve([]);
         }
       }
@@ -73,9 +73,9 @@ describe('Anthem', () => {
       anthem.addCollection(new Bazzes());
 
       let error;
-      try { yield anthem.getOne('bazzes'); } catch (e) { error = e; }
+      try { yield anthem.getById('bazzes'); } catch (e) { error = e; }
 
-      expect(error.message).to.equal(`Non-object returned from getOne method of Bazzes`);
+      expect(error.message).to.equal(`Non-object returned from getById method of Bazzes`);
     });
 
     it('formats response as object with single key', function *() {
@@ -84,7 +84,7 @@ describe('Anthem', () => {
           return 'bazzes';
         }
 
-        getOne() {
+        getById() {
           return Promise.resolve({
             foo: 'bar',
           });
@@ -93,7 +93,7 @@ describe('Anthem', () => {
 
       anthem.addCollection(new Bazzes());
 
-      expect(yield anthem.getOne('bazzes')).to.deep.equal({
+      expect(yield anthem.getById('bazzes')).to.deep.equal({
         bazzes: [
           {
             foo: 'bar',
