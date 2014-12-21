@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npm run clean && 6to5 src -d dist -b generators,letScoping,constants",
+    "build": "npm run clean && 6to5 src -d dist",
     "watch": "npm run build -- -w",
     "test": "npm run build && mocha --harmony dist/**/__tests__/*-test.js --require dist/test-init.js"
   },
@@ -13,13 +13,13 @@
   "license": "ISC",
   "dependencies": {
     "101": "~0.8.0",
-    "co": "~4.0.1",
     "object-assign": "~2.0.0"
   },
   "devDependencies": {
     "6to5": "~1.15.0",
     "chai": "~1.10.0",
-    "co-mocha": "~1.1.0",
+    "chai-as-promised": "~4.1.1",
+    "es6-promise": "~2.0.1",
     "mocha": "~2.0.1",
     "sinon": "~1.12.2"
   }

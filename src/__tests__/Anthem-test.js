@@ -1,6 +1,5 @@
 'use strict';
 
-import { expect } from 'chai';
 import { default as Anthem, Collection } from '../Anthem.js';
 
 describe('Anthem', () => {
@@ -23,10 +22,10 @@ describe('Anthem', () => {
 
   describe('#addCollection', () => {
     it('requires collection to inherit from base Collection', () => {
-      expect(anthem.addCollection.bind(anthem, bars)).to.throw(
-        'Collection must inherit from base Collection class.'
-      );
-      expect(anthem.addCollection.bind(anthem, foos)).not.to.throw();
+      expect(anthem.addCollection.bind(anthem, bars))
+        .to.throw('Collection must inherit from base Collection class.');
+      expect(anthem.addCollection.bind(anthem, foos))
+        .not.to.throw();
     });
 
     it('requires collection to have name property of type String', () => {
@@ -38,12 +37,10 @@ describe('Anthem', () => {
       let noNames = new NoNames();
       let numberNames = new NumberNames();
 
-      expect(anthem.addCollection.bind(anthem, noNames)).to.throw(
-        'Collection must have name property of type String.'
-      );
-      expect(anthem.addCollection.bind(anthem, numberNames)).to.throw(
-        'Collection must have name property of type String.'
-      );
+      expect(anthem.addCollection.bind(anthem, noNames))
+        .to.throw('Collection must have name property of type String.');
+      expect(anthem.addCollection.bind(anthem, numberNames))
+        .to.throw('Collection must have name property of type String.');
     });
   });
 
@@ -61,7 +58,7 @@ describe('Anthem', () => {
   describe('#getById', () => {
     testRESTOperation('getById');
 
-    it('throws if response from collection is not an object', function *() {
+    it('rejects if response from collection is not an object', done => {
       class Bazzes extends Collection {
         get name() { return 'bazzes'; }
 
@@ -72,13 +69,12 @@ describe('Anthem', () => {
 
       anthem.addCollection(new Bazzes());
 
-      let error;
-      try { yield anthem.getById('bazzes'); } catch (e) { error = e; }
-
-      expect(error.message).to.equal(`Non-object returned from getById method of Bazzes`);
+      expect(anthem.getById('bazzes'))
+        .to.be.rejectedWith(`Non-object returned from getById method of Bazzes`)
+        .notify(done);
     });
 
-    it('formats response as object with single key', function *() {
+    it('formats response as object with single key', done => {
       class Bazzes extends Collection {
         get name() {
           return 'bazzes';
@@ -93,20 +89,22 @@ describe('Anthem', () => {
 
       anthem.addCollection(new Bazzes());
 
-      expect(yield anthem.getById('bazzes')).to.deep.equal({
-        bazzes: [
-          {
-            foo: 'bar',
-          }
-        ],
-      });
+      expect(anthem.getById('bazzes'))
+        .to.eventually.deep.equal({
+          bazzes: [
+            {
+              foo: 'bar',
+            }
+          ],
+        })
+        .notify(done);
     });
   });
 
   describe('#get', () => {
     testRESTOperation('get');
 
-    it('throws if response from collection is not an array', function *() {
+    it('rejects if response from collection is not an array', done => {
       class Bazzes extends Collection {
         get name() { return 'bazzes'; }
 
@@ -117,15 +115,12 @@ describe('Anthem', () => {
 
       anthem.addCollection(new Bazzes());
 
-      let error;
-      try { yield anthem.get('bazzes'); } catch (e) { error = e; }
-
-      expect(error.message).to.equal(
-        'Non-array returned from get method of Bazzes'
-      );
+      expect(anthem.get('bazzes'))
+        .to.be.rejectedWith('Non-array returned from get method of Bazzes')
+        .notify(done);
     });
 
-    it('formats response as object with single key', function *() {
+    it('formats response as object with single key', done => {
       class Bazzes extends Collection {
         get name() {
           return 'bazzes';
@@ -138,16 +133,16 @@ describe('Anthem', () => {
 
       anthem.addCollection(new Bazzes());
 
-      expect(yield anthem.get('bazzes')).to.deep.equal({
+      expect(anthem.get('bazzes')).to.eventually.deep.equal({
         bazzes: [1, 2, 3],
-      });
+      }).notify(done);
     });
   });
 
   describe('#post', () => {
     testRESTOperation('post');
 
-    it('throws if response from collection is not an object', function *() {
+    it('throws if response from collection is not an object', done => {
       class Bazzes extends Collection {
         get name() { return 'bazzes'; }
 
@@ -158,10 +153,9 @@ describe('Anthem', () => {
 
       anthem.addCollection(new Bazzes());
 
-      let error;
-      try { yield anthem.post('bazzes'); } catch (e) { error = e; }
-
-      expect(error.message).to.equal(`Non-object returned from post method of Bazzes`);
+      expect(anthem.post('bazzes'))
+        .to.be.rejectedWith('Non-object returned from post method of Bazzes')
+        .notify(done);
     });
   });
   //
@@ -175,18 +169,17 @@ describe('Anthem', () => {
 
   function testRESTOperation(operation) {
     it('throws if there is no matching collection', () => {
-      expect(anthem[operation].bind(anthem, 'foos')).to.throw(
-        'No registered collection with name foos exists.'
-      );
+      expect(anthem[operation].bind(anthem, 'foos'))
+        .to.throw('No registered collection with name foos exists.');
     });
 
-    it('returns Promise for null if operation is not supported', function *() {
+    it('resolves to null if operation is not supported', done => {
       class Bazzes extends Collection {
         get name() { return 'bazzes'; }
       }
 
       anthem.addCollection(new Bazzes());
-      expect(yield anthem[operation]('bazzes')).to.be.null;
+      expect(anthem[operation]('bazzes')).to.eventually.be.null.notify(done);
     });
   }
 });

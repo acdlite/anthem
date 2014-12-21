@@ -2,7 +2,6 @@
 
 import Collection from './Collection';
 import performCollectionRESTOperation from './performCollectionRESTOperation';
-import * as co from 'co';
 import * as isObject from '101/is-object';
 import * as isString from '101/is-string';
 
@@ -53,52 +52,53 @@ class Anthem {
   getById(collectionName, id, ...args) {
     let collection = this.getCollectionOrThrow(collectionName);
 
-    return co(function *() {
-      let response = yield performCollectionRESTOperation(collection, 'getById', id, ...args);
+    return performCollectionRESTOperation(collection, 'getById', id, ...args)
+      .then(response => {
+        if (response == null) {
+          return null
+        }
 
-      if (response === null) {
-        return null;
-      }
-      else if (!isObject(response)) {
-        throw new Error(`Non-object returned from getById method of ${collection.constructor.name}`);
-      }
+        if (!isObject(response)) {
+          throw new Error(`Non-object returned from getById method of ${collection.constructor.name}`);
+        }
 
-      return formatCollection(collectionName, [response]);
-    });
+        return formatCollection(collectionName, [response]);
+      });
   }
 
   get(collectionName, ...args) {
     let collection = this.getCollectionOrThrow(collectionName);
 
-    return co(function *() {
-      let response = yield performCollectionRESTOperation(collection, 'get', ...args);
+    return performCollectionRESTOperation(collection, 'get', ...args)
+      .then(response => {
+        if (response === null) {
+          return null;
+        }
 
-      if (response === null) {
-        return null;
-      }
-      else if (!isArray(response)) {
-        throw new Error(`Non-array returned from get method of ${collection.constructor.name}`);
-      }
+        if (!isArray(response)) {
+          throw new Error(`Non-array returned from get method of ${collection.constructor.name}`);
+        }
 
-      return formatCollection(collectionName, response);
-    });
+        return formatCollection(collectionName, response);
+      });
   }
 
   post(collectionName, resource, ...args) {
     let collection = this.getCollectionOrThrow(collectionName);
 
-    return co(function *() {
-      let response = yield performCollectionRESTOperation(collection, 'post', resource, ...args);
+    return performCollectionRESTOperation(collection, 'post', resource, ...args)
+      .then(response => {
+        if (response === null) {
+          return null;
+        }
 
-      if (response === null) {
-        return null;
-      }
-      else if (!isObject(response)) {
-        throw new Error(`Non-object returned from post method of ${collection.constructor.name}`);
-      }
+        if (!isObject(response)) {
+          throw new Error(`Non-object returned from post method of ${collection.constructor.name}`);
+        }
 
-      return formatCollection(collectionName, [response]);
-    });
+        return formatCollection(collectionName, [response]);
+
+      });
   }
 }
 

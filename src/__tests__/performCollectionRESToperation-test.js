@@ -1,46 +1,47 @@
 'use strict';
 
-import { expect } from 'chai';
-
 describe('performCollectionRESTOperation', () => {
   import performCollectionRESTOperation from '../performCollectionRESTOperation.js';
 
-  it('returns promise for result of operation', function *() {
+  it('returns promise for result of operation',  done => {
     let c = {
       foo(a, b) {
         return Promise.resolve({ result: a + b });
       },
     };
 
-    expect(yield performCollectionRESTOperation(c, 'foo', 'bar', 'baz')).to.deep.equal({ result: 'barbaz' });
+    expect(performCollectionRESTOperation(c, 'foo', 'bar', 'baz'))
+      .to.eventually.deep.equal({ result: 'barbaz' })
+      .notify(done);
   });
 
-  it('throws if result is not a promise', () => {
+  it('rejects if result is not a promise', done => {
     let c = {
       foo() {
         return 'foobar';
       },
     };
 
-    expect(performCollectionRESTOperation.bind(null, c, 'foo')).to.throw(
-      'foo method of Object collection must return a Promise.'
-    );
+    expect(performCollectionRESTOperation(c, 'foo'))
+      .to.be.rejectedWith('foo method of Object collection must return a Promise.')
+      .notify(done);
   });
 
-  it('returns promise for null if operation is not supported', function *() {
-    expect(yield performCollectionRESTOperation({}, 'get')).to.be.null;
+  it('resolves to null if operation is not supported', done => {
+    expect(performCollectionRESTOperation({}, 'get'))
+      .to.eventually.be.null
+      .notify(done);
   });
 
-  it('throws if promise from operation resolves to non-object', function *() {
+  it('rejects if operation resolves to non-object', done => {
     let c = {
       foo() {
         return 'bar';
       }
     };
 
-    let error;
-    try { yield performCollectionRESTOperation(c, 'foo'); } catch (e) { error = e; }
-
-    expect(error.message).to.equal('foo method of Object collection must return a Promise.');
+    expect(performCollectionRESTOperation(c, 'foo'))
+      .to.be.rejectedWith('foo method of Object collection must return a Promise.')
+      .notify(done);
   });
 });
