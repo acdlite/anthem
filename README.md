@@ -42,15 +42,24 @@ APIs retrieve your application's resources (via collections, described in the ne
 
 While APIs are primarily concerned with formatting data for the consumer, Collections are responsible for retrieving your application's resources.
 
-To create a new collection, extend from the base Collection class.
+A Collection is any object that implements the Collection interface.
 
 ```js
-import { Collection } from Anthem;
+class Posts {
 
-class Posts extends Collection {
+  getById(id, params) {
 
-  ...
+    ...
 
+    return post;
+  }
+
+  getPosts(params) {
+
+    ...
+
+    return posts;
+  }
 }
 
 let posts = new Posts();
@@ -60,9 +69,9 @@ export default posts;
 
 To use a collection, register it with `api.addCollection()`.
 
-## Collection methods
+## Collection interface
 
-A collection class may implement one or more of the following methods, which correspond to REST operations.
+A collection may implement one or more of the following methods, which correspond to REST operations.
 
 ### `getById(id, [params])`
 

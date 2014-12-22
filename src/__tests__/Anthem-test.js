@@ -1,6 +1,6 @@
 'use strict';
 
-import { default as Anthem, Collection } from '../Anthem.js';
+import Anthem from '../Anthem.js';
 
 describe('Anthem', () => {
 
@@ -9,7 +9,7 @@ describe('Anthem', () => {
   beforeEach(() => {
     anthem = new Anthem();
 
-    class Foos extends Collection {
+    class Foos {
       get name() { return 'foos'; }
     }
     class Bars {
@@ -21,16 +21,9 @@ describe('Anthem', () => {
   });
 
   describe('#addCollection', () => {
-    it('requires collection to inherit from base Collection', () => {
-      expect(anthem.addCollection.bind(anthem, bars))
-        .to.throw('Collection must inherit from base Collection class.');
-      expect(anthem.addCollection.bind(anthem, foos))
-        .not.to.throw();
-    });
-
     it('requires collection to have name property of type String', () => {
-      class NoNames extends Collection {}
-      class NumberNames extends Collection {
+      class NoNames {}
+      class NumberNames {
         get name() { return 42; }
       }
 
@@ -59,7 +52,7 @@ describe('Anthem', () => {
     testRESTOperation('getById');
 
     it('rejects if response from collection is not an object', done => {
-      class Bazzes extends Collection {
+      class Bazzes {
         get name() { return 'bazzes'; }
 
         getById() {
@@ -75,7 +68,7 @@ describe('Anthem', () => {
     });
 
     it('formats response as object with single key', done => {
-      class Bazzes extends Collection {
+      class Bazzes {
         get name() {
           return 'bazzes';
         }
@@ -105,7 +98,7 @@ describe('Anthem', () => {
     testRESTOperation('get');
 
     it('rejects if response from collection is not an array', done => {
-      class Bazzes extends Collection {
+      class Bazzes {
         get name() { return 'bazzes'; }
 
         get() {
@@ -121,7 +114,7 @@ describe('Anthem', () => {
     });
 
     it('formats response as object with single key', done => {
-      class Bazzes extends Collection {
+      class Bazzes {
         get name() {
           return 'bazzes';
         }
@@ -143,7 +136,7 @@ describe('Anthem', () => {
     testRESTOperation('post');
 
     it('throws if response from collection is not an object', done => {
-      class Bazzes extends Collection {
+      class Bazzes {
         get name() { return 'bazzes'; }
 
         post() {
@@ -174,7 +167,7 @@ describe('Anthem', () => {
     });
 
     it('resolves to null if operation is not supported', done => {
-      class Bazzes extends Collection {
+      class Bazzes {
         get name() { return 'bazzes'; }
       }
 

@@ -1,6 +1,5 @@
 'use strict';
 
-import Collection from './Collection';
 import performCollectionRESTOperation from './performCollectionRESTOperation';
 import * as isObject from '101/is-object';
 import * as isString from '101/is-string';
@@ -17,10 +16,6 @@ class Anthem {
    * @param {Collection} collection
    */
   addCollection(collection) {
-    if (!(collection instanceof Collection)) {
-      throw new Error('Collection must inherit from base Collection class.');
-    }
-
     let name = collection.name;
 
     if (!isString(name)) {
@@ -109,4 +104,3 @@ function formatCollection(collectionName, resources) {
 }
 
 export default Anthem;
-export { Collection };
