@@ -4,10 +4,7 @@
   "description": "Minimal REST framework",
   "main": "dist/app.js",
   "scripts": {
-    "clean": "rm -rf dist",
-    "build": "npm run clean && 6to5 src -d dist",
-    "watch": "npm run build -- -w",
-    "test": "npm run build && mocha --harmony dist/**/__tests__/*-test.js --require dist/test-init.js"
+    "test": "make test"
   },
   "author": "Andrew Clark",
   "license": "ISC",

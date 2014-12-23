@@ -8,7 +8,7 @@ let { isArray } = Array;
 
 class Anthem {
   constructor() {
-    this.collections = new Map();
+    this.collections = {};
   }
 
   /**
@@ -22,7 +22,7 @@ class Anthem {
       throw new Error('Collection must have name property of type String.');
     }
 
-    this.collections.set(name, collection);
+    this.collections[name] = collection;
   }
 
   /**
@@ -31,7 +31,7 @@ class Anthem {
    * @returns {Collection} collection
    */
   collection(name) {
-    return this.collections.get(name);
+    return this.collections[name];
   }
 
   getCollectionOrThrow(name) {
