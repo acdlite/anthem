@@ -13,11 +13,11 @@
     "object-assign": "~2.0.0"
   },
   "devDependencies": {
-    "6to5": "~1.15.0",
+    "6to5": "~2.0.4",
     "chai": "~1.10.0",
     "chai-as-promised": "~4.1.1",
     "es6-promise": "~2.0.1",
-    "mocha": "~2.0.1",
+    "mocha": "~2.1.0",
     "sinon": "~1.12.2"
   }
 }
